@@ -31,16 +31,21 @@ def view_patiend_record(patient_id: str = Path(...,title="Patient ID",descriptio
     raise HTTPException(status_code=404, detail="Patient not found")
 
 
-@app.get("/sort/patient/")
-def sort_patients(sort_by : str = Query(...,description="Sort Key for the patients to be sorted:height,weight,bmi"),order: str = Query("asc",description="Order of the patients to be sorted:asc,desc")):
+@app.get("/sort/patient")
+def sort_patients(sort_by : str = Query(...,description="Sort Key for the patients to be sorted:height,weight,bmi"),
+        order: str = Query("asc", description="Order of the patients to be sorted:asc,desc")):
     
     valid_fields = ["height","weight","bmi"]
+
     if sort_by not in valid_fields:
         raise HTTPException(status_code=400, detail=f"Invalid field select from {valid_fields}")
     
     if order not in ["asc","desc"]:
-        raise HTTPException(status_code=400, detail="Invalid order")
+        raise HTTPException(status_code=400, detail="Invalid order select between asc and desc")
     
     data = load_data()
     sort_order=True if order =='desc' else False
-    return sorted(data.items(),key=lambda x: x.get(sort_by),reverse=sort_order)
+    return sorted(data.values(),key=lambda x: x.get(sort_by),reverse=sort_order)
+
+
+
